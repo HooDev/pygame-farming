@@ -1,15 +1,19 @@
 import pygame
 import sys
 import os
+from pytmx.util_pygame import load_pygame
+
 
 # Constants
-SCREEN_WIDTH, SCREEN_HEIGHT = 1080, 720
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 800
 FPS = 60
 BG_COLOR = (30, 30, 30)
-PLAYER_SPRITESHEET = ".\\assets\Sprout Lands - Sprites - premium pack\Characters\Basic Charakter Spritesheet.png" 
+PLAYER_SPRITESHEET = ".\\assets\\Sprout Lands - Sprites - premium pack\\Characters\\Basic Charakter Spritesheet.png" 
 
 FRAME_WIDTH, FRAME_HEIGHT = 48, 48
 FRAME_DURATION = 100 # miliseconds
+
+TILE_WIDTH, TILE_HEIGHT = 16, 16
 
 PLAYER_SPEED = 150
 
@@ -75,7 +79,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self.player = Player(PLAYER_SPRITESHEET)
-
+        self.map = load_pygame("assets/Tiled/island.tmx")
 
     def handle_events(self, delta_time):
         for event in pygame.event.get():
@@ -90,6 +94,14 @@ class Game:
     def draw(self):
         self.screen.fill(BG_COLOR)
         
+        water = self.map.get_layer_by_name("Water")
+        for x, y, tile_surface in water.tiles():
+            self.screen.blit(tile_surface, (x*TILE_WIDTH, y*TILE_HEIGHT))
+
+        ground = self.map.get_layer_by_name("Ground")
+        for x, y, tile_surface in ground.tiles():
+            self.screen.blit(tile_surface, (x*TILE_WIDTH, y*TILE_HEIGHT))
+
         self.player.draw(self.screen)
 
         pygame.display.flip()
@@ -107,5 +119,15 @@ class Game:
 
 if __name__ == "__main__":
     game = Game()
+    
+    # EXPERIMENTING WITH PYTMX
+
+    #print(game.map)
+    #water = game.map.get_layer_by_name("Water")
+    #ground = game.map.get_layer_by_name("Ground")
+
+    #for tile in water.tiles():
+    #    print(tile)
+
     game.run()
 
